@@ -1,0 +1,7 @@
+{
+  "name": "Copy of NexusLearn AI Quiz Generator",
+  "description": "An AI-powered quiz generator that creates customized quizzes on any topic. Features multiple question types, adjustable difficulty, and a conversational AI learning assistant, all powered by the Gemini API.",
+  "requestFramePermissions": [
+    "microphone"
+  ]
+}
