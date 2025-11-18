@@ -1,4 +1,3 @@
-
 import React, { useContext } from 'react';
 import { AppContext } from '../context/AppContext.tsx';
 import HomePage from '../pages/HomePage.tsx';

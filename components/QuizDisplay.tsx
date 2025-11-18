@@ -431,10 +431,11 @@ const QuizDisplay: React.FC<QuizDisplayProps> = ({ quizData, formData }) => {
                     <button 
                         onClick={handleDownloadPDF} 
                         disabled={isDownloading}
-                        className="flex items-center justify-center w-10 h-10 rounded-md bg-purple-500/20 hover:bg-purple-500/40 transition-colors text-purple-400 disabled:opacity-50"
-                        title="Download PDF"
+                        className="flex items-center gap-2 px-3 py-2 rounded-md bg-purple-500/20 hover:bg-purple-500/40 transition-colors text-purple-400 disabled:opacity-50 text-sm font-semibold"
+                        title="Download Quiz as PDF"
                     >
                         {isDownloading ? <i className="fas fa-spinner animate-spin"></i> : <i className="fas fa-file-pdf"></i>}
+                        <span>Download PDF</span>
                     </button>
 
                     {!isSubmitted && (
