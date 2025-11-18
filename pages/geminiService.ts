@@ -3,12 +3,12 @@ import { GoogleGenAI, Type, Chat, Modality } from "@google/genai";
 import type { QuizData, QuestionType, ChatMessage, Question, GuideDepth, GuideFormat, StudyGuideData } from '../types.ts';
 
 if (!process.env.API_KEY) {
-    console.warn("API_KEY environment variable not set. Some features may not work.");
+    throw new Error("API_KEY environment variable not set");
 }
 
 // Create a new GoogleGenAI instance on-demand to ensure the latest API key is used,
 // especially after user selection for features like Veo.
-const getAiInstance = () => new GoogleGenAI({ apiKey: process.env.API_KEY || '' });
+const getAiInstance = () => new GoogleGenAI({ apiKey: process.env.API_KEY });
 
 
 const quizSchema = {

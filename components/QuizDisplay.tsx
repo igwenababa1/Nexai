@@ -2,7 +2,7 @@
 import React, { useState, useMemo, useEffect, useRef, useContext } from 'react';
 import type { QuizData, Question, QuizFormData } from '../types.ts';
 import { generateVisualExplanation } from '../services/geminiService.ts';
-import html2pdf from 'html2pdf.js';
+import html2pdf from 'html2pdf.js/dist/html2pdf.min.js';
 import { AppContext } from '../context/AppContext.tsx';
 import VideoSummaryModal from './VideoSummaryModal.tsx';
 import ArtGeneratorModal from './ArtGeneratorModal.tsx';
@@ -293,6 +293,40 @@ const QuizDisplay: React.FC<QuizDisplayProps> = ({ quizData, formData }) => {
     const [showArtModal, setShowArtModal] = useState(false);
     const quizPaperRef = useRef<HTMLDivElement>(null);
 
+    // Generate a unique storage key for this specific quiz
+    const storageKey = useMemo(() => `quiz_progress_${quizData.title.replace(/\s+/g, '_')}`, [quizData.title]);
+
+    // Load progress from localStorage on mount
+    useEffect(() => {
+        const savedProgress = localStorage.getItem(storageKey);
+        if (savedProgress) {
+            try {
+                const parsed = JSON.parse(savedProgress);
+                if (parsed.answers) setUserAnswers(parsed.answers);
+                if (typeof parsed.elapsedTime === 'number') setElapsedTime(parsed.elapsedTime);
+                if (parsed.markedIds) setMarkedQuestionIds(new Set(parsed.markedIds));
+                if (parsed.isSubmitted) {
+                    setIsSubmitted(true);
+                    setIsTimerRunning(false);
+                }
+            } catch (e) {
+                console.error("Failed to load saved quiz progress", e);
+            }
+        }
+    }, [storageKey]);
+
+    // Save progress to localStorage whenever state changes
+    useEffect(() => {
+        const progress = {
+            answers: userAnswers,
+            elapsedTime,
+            markedIds: Array.from(markedQuestionIds),
+            isSubmitted
+        };
+        localStorage.setItem(storageKey, JSON.stringify(progress));
+    }, [userAnswers, elapsedTime, markedQuestionIds, isSubmitted, storageKey]);
+
+
     // Timer Logic
     useEffect(() => {
         let interval: number | undefined;
@@ -416,8 +450,13 @@ const QuizDisplay: React.FC<QuizDisplayProps> = ({ quizData, formData }) => {
                         <i className="fas fa-bookmark"></i>
                     </button>
 
-                    <button onClick={() => setShowArtModal(true)} className="flex items-center justify-center w-10 h-10 rounded-md bg-pink-500/20 hover:bg-pink-500/40 transition-colors text-pink-400" title="Generate AI Art">
+                    <button 
+                        onClick={() => setShowArtModal(true)} 
+                        className="flex items-center gap-2 px-3 py-2 rounded-md bg-pink-500/20 hover:bg-pink-500/40 transition-colors text-pink-400 text-sm font-semibold"
+                        title="Generate AI Art"
+                    >
                         <i className="fas fa-palette"></i>
+                        <span>Generate AI Art</span>
                     </button>
 
                     <button onClick={() => setShowVideoModal(true)} className="flex items-center justify-center w-10 h-10 rounded-md bg-teal-500/20 hover:bg-teal-500/40 transition-colors text-teal-400" title="Generate Video Summary">

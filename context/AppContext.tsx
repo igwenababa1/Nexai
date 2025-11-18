@@ -94,38 +94,55 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
     // Toast Notification State
     const { toasts, addToast, removeToast } = useToasts();
 
-    // Theme & Bookmarks Effect
+    // Theme & Bookmarks & Persistence Effect
     useEffect(() => {
-        // Load theme from local storage
+        // Load theme
         const isDark = localStorage.getItem('darkMode') !== 'false';
         setDarkMode(isDark);
-        if (isDark) {
-            document.documentElement.classList.add('dark');
-        } else {
-            document.documentElement.classList.remove('dark');
-        }
+        if (isDark) document.documentElement.classList.add('dark');
+        else document.documentElement.classList.remove('dark');
         
-        // Load bookmarks from local storage
+        // Load bookmarks
         try {
             const savedBookmarks = localStorage.getItem('quizBookmarks');
-            if (savedBookmarks) {
-                setBookmarks(JSON.parse(savedBookmarks));
-            }
+            if (savedBookmarks) setBookmarks(JSON.parse(savedBookmarks));
         } catch (error) {
-            console.error("Failed to load bookmarks from localStorage", error);
-            addToast("Could not load saved bookmarks.", "error");
+            console.error("Failed to load bookmarks", error);
         }
-    }, [addToast]);
+
+        // Load active quiz session
+        try {
+            const savedQuiz = localStorage.getItem('activeQuizData');
+            if (savedQuiz) setQuizData(JSON.parse(savedQuiz));
+            
+            const savedForm = localStorage.getItem('activeQuizForm');
+            if (savedForm) setFormDataQuiz(JSON.parse(savedForm));
+        } catch (error) {
+             console.error("Failed to load active quiz", error);
+        }
+    }, []);
+
+    // Persist Quiz Data
+    useEffect(() => {
+        if (quizData) {
+            localStorage.setItem('activeQuizData', JSON.stringify(quizData));
+        } else {
+            localStorage.removeItem('activeQuizData');
+        }
+    }, [quizData]);
+
+    // Persist Form Data
+    useEffect(() => {
+        localStorage.setItem('activeQuizForm', JSON.stringify(formDataQuiz));
+    }, [formDataQuiz]);
+
 
     const toggleDarkMode = useCallback(() => {
         setDarkMode(prevMode => {
             const newMode = !prevMode;
             localStorage.setItem('darkMode', String(newMode));
-            if (newMode) {
-                document.documentElement.classList.add('dark');
-            } else {
-                document.documentElement.classList.remove('dark');
-            }
+            if (newMode) document.documentElement.classList.add('dark');
+            else document.documentElement.classList.remove('dark');
             return newMode;
         });
     }, []);

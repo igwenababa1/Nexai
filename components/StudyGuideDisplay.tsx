@@ -1,7 +1,7 @@
 
 import React, { useState, useRef, useContext } from 'react';
 import type { StudyGuideData } from '../types.ts';
-import html2pdf from 'html2pdf.js';
+import html2pdf from 'html2pdf.js/dist/html2pdf.min.js';
 import { AppContext } from '../context/AppContext.tsx';
 import MarkdownRenderer from './MarkdownRenderer.tsx';
 
